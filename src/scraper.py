@@ -51,6 +51,15 @@ class XScraper(object):
             # save_dict_to_csv(tweets)
 
         return tweets
+    
+    def removeDuplicateHashtag(self, tweet):
+        cleanedTweet = ''
+        for word in tweet.split():
+            if word[0]=='#':
+                cleanedTweet += '#' + word[1:].split('#')[0] + ' '
+            else:
+                cleanedTweet += word + ' '
+        return cleanedTweet
 
     def scrape_tweets(self, handle: str):
         """Scrapes tweets from a given twitter handle"""
@@ -69,7 +78,7 @@ class XScraper(object):
             tweet_strs = [
                 clean_string(child.text) for child in all_html_children
             ]
-            tweets_text.append(''.join(tweet_strs))
+            tweets_text.append(self.removeDuplicateHashtag(''.join(tweet_strs)))
 
         return tweets_text
 
