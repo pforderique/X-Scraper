@@ -2,6 +2,7 @@ from pprint import pprint
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import pandas as pd
 
 from utils.utils import clean_string, parse_json_to_attr, save_dict_to_csv
 
@@ -39,15 +40,23 @@ class XScraper(object):
     def scrape_accounts(self, accounts: list, save_to_csv=False):
         """Scrapes tweets from a list of twitter accounts"""
         tweets = dict()
+        df = pd.DataFrame(columns=['Account', 'Label', 'Tweet'])
 
         for account in accounts:
             tweets[account] = self.scrape_tweets(account)
 
             print(f'*********** ACCOUNT <{account}> ***********')
             pprint(tweets[account])
+            for tweet in tweets[account]:
+                row = {
+                    'Account': account,
+                    'Label': 1 if account=='taylorswift13' else 0,
+                    'Tweet': tweet
+                }
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
         if save_to_csv:
-            raise NotImplementedError # this isn't working yet
+            df.to_csv('./tweets.csv')
             # save_dict_to_csv(tweets)
 
         return tweets
